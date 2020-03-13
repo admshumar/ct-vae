@@ -198,7 +198,7 @@ class VAE:
                  enable_rotations=False,
                  enable_stochastic_gradient_descent=False,
                  has_custom_layers=True,
-                 has_validation_set=False,
+                 has_validation_set=True,
                  validation_size=0.5,
                  is_confused=False,
                  is_mnist=True,

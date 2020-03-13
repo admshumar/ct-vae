@@ -29,7 +29,7 @@ class ConvolutionalVAE(VAE):
                  enable_rotations=False,
                  enable_stochastic_gradient_descent=False,
                  has_custom_layers=True,
-                 has_validation_set=False,
+                 has_validation_set=True,
                  is_mnist=True,
                  is_restricted=False,
                  is_standardized=False,
