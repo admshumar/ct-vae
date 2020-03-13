@@ -28,17 +28,30 @@ parser.add_argument("-l", "--logging", help="Log training. (Default: True)",
                     type=bool, default=True)
 args = parser.parse_args()
 
-vae = ConvolutionalVAE(is_mnist=args.is_mnist,
-                       number_of_epochs=args.epochs,
-                       enable_early_stopping=args.early_stop,
-                       enable_logging=args.logging,
-                       enable_stochastic_gradient_descent=args.sgd,
-                       encoder_activation=args.enc_activation,
-                       decoder_activation=args.dec_activation,
-                       final_activation=args.final_activation,
-                       learning_rate_initial=args.lr,
-                       beta=args.beta,
-                       batch_size=args.batch_size,
-                       latent_dimension=args.latent_dim)
+is_mnist = args.is_mnist
+epochs = args.epochs
+early_stop = args.early_stop
+logging = args.logging
+sgd = args.sgd
+enc_activation = args.enc_activation
+dec_activation = args.dec_activation
+final_activation = args.final_activation
+lr = args.lr
+beta = args.beta
+batch_size = args.batch_size
+latent_dim = args.latent_dim
+
+vae = ConvolutionalVAE(is_mnist=is_mnist,
+                       number_of_epochs=epochs,
+                       enable_early_stopping=early_stop,
+                       enable_logging=logging,
+                       enable_stochastic_gradient_descent=sgd,
+                       encoder_activation=enc_activation,
+                       decoder_activation=dec_activation,
+                       final_activation=final_activation,
+                       learning_rate_initial=lr,
+                       beta=beta,
+                       batch_size=batch_size,
+                       latent_dimension=latent_dim)
 vae.train()
 del vae
