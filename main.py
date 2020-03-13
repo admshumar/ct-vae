@@ -2,8 +2,8 @@ from models.vae_conv import ConvolutionalVAE
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--is_mnist", help="Use mnist or a default data set. (Default: False)",
-                    type=bool, default=False)
+parser.add_argument("-b", "--batch_size", help="Batch size. (Default: 5)",
+                    type=int, default=5)
 parser.add_argument("-e", "--epochs", help="Number of epochs. (Default: 5)",
                     type=int, default=5)
 parser.add_argument("--early_stop", help="Train with early stopping. (Default: True)",
@@ -12,8 +12,6 @@ parser.add_argument("--lr", help="Learning rate. (Default: 1e-4)",
                     type=float, default=1e-4)
 parser.add_argument("--beta", help="Beta coefficient of the encoding loss. (Default: 1)",
                     type=float, default=1)
-parser.add_argument("-b", "--batch_size", help="Batch size. (Default: 5)",
-                    type=int, default=5)
 parser.add_argument("--latent_dim", help="Dimension of the model's latent space. (Default: 2)",
                     type=int, default=2)
 parser.add_argument("--sgd", help="Train with stochastic gradient descent. (Default: True)",
@@ -24,6 +22,8 @@ parser.add_argument("--dec_activation", help="Decoder activation function. (Defa
                     type=str, default='relu')
 parser.add_argument("--final_activation", help="Final activation function. (Default: 'sigmoid')",
                     type=str, default='sigmoid')
+parser.add_argument("--is_mnist", help="Use MNIST instead of a custom data set. (Default: False)",
+                    type=bool, default=False)
 parser.add_argument("-l", "--logging", help="Log training. (Default: True)",
                     type=bool, default=True)
 args = parser.parse_args()
@@ -40,5 +40,5 @@ vae = ConvolutionalVAE(is_mnist=args.is_mnist,
                        beta=args.beta,
                        batch_size=args.batch_size,
                        latent_dimension=args.latent_dim)
-print(vars(vae))
+vae.train()
 del vae
