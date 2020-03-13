@@ -14,6 +14,8 @@ parser.add_argument("--beta", help="Beta coefficient of the encoding loss. (Defa
                     type=float, default=1)
 parser.add_argument("-b", "--batch_size", help="Batch size. (Default: 5)",
                     type=int, default=5)
+parser.add_argument("--latent_dim", help="Dimension of the model's latent space. (Default: 2)",
+                    type=int, default=2)
 parser.add_argument("--sgd", help="Train with stochastic gradient descent. (Default: True)",
                     type=bool, default=True)
 parser.add_argument("--enc_activation", help="Encoder activation function. (Default: 'relu')",
@@ -36,6 +38,7 @@ vae = ConvolutionalVAE(is_mnist=args.is_mnist,
                        final_activation=args.final_activation,
                        learning_rate_initial=args.lr,
                        beta=args.beta,
-                       batch_size=args.batch_size)
+                       batch_size=args.batch_size,
+                       latent_dimension=args.latent_dim)
 print(vars(vae))
 del vae
