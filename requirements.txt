@@ -30,6 +30,6 @@ tensorboard==1.14.0
 tensorflow==1.14.0
 tensorflow-estimator==1.14.0
 termcolor==1.1.0
-tf-unet==0.1.1
+#tf-unet==0.1.1
 Werkzeug==0.16.1
 wrapt==1.11.2
