@@ -17,7 +17,7 @@ class EncodingLoss(Loss):
         :return: A float indicating the encoding loss.
         """
         latent_dimension = y_pred.get_shape()[1]
-        latent_dimension = int(latent_dimension)
+        latent_dimension = int(latent_dimension) // 2
         mean = y_pred[:, 0:latent_dimension]
         logarithmic_covariance = y_pred[:, latent_dimension:]
         kullback_leibler_divergence_vector = \
