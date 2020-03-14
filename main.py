@@ -47,7 +47,7 @@ latent_dim = args.latent_dim
 gpu = args.gpu
 """
 
-os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
+os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpu)
 vae = ConvolutionalVAE(is_mnist=args.is_mnist,
                        number_of_epochs=args.epochs,
                        enable_early_stopping=args.early_stop,
