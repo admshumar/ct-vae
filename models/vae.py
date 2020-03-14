@@ -634,85 +634,88 @@ class VAE:
         if self.show:
             plt.show()
 
-        if self.is_mnist:
-            if test_mode:
-                filename = "latent_test.png"
+        if self.latent_dimension == 2:
+            if self.is_mnist:
+                if test_mode:
+                    filename = "latent_test.png"
+                else:
+                    filename = "latent.png"
+                filepath = os.path.join(self.image_directory, filename)
+                # display a 30x30 2D manifold of digits
+                n = 30
+                image_size = 28
+                figure = np.zeros((image_size * n, image_size * n))
+                # linearly spaced coordinates corresponding to the 2D plot
+                # of digit classes in the latent space
+                grid_x = np.linspace(-4, 4, n)
+                grid_y = np.linspace(-4.5, 3.5, n)[::-1]
+
+                for i, yi in enumerate(grid_y):
+                    for j, xi in enumerate(grid_x):
+                        parameter_tuple = (np.zeros(self.latent_dimension), np.ones(self.latent_dimension))
+                        dummy_gaussian = np.array(np.concatenate(parameter_tuple))
+                        z_sample = np.array([[xi, yi]])
+                        x_decoded = decoder.predict([dummy_gaussian, z_sample])
+                        digit = x_decoded[1].reshape(image_size, image_size)
+                        figure[i * image_size: (i + 1) * image_size,
+                        j * image_size: (j + 1) * image_size] = digit
+
+                plt.figure(figsize=(10, 10))
+                start_range = image_size // 2
+                end_range = (n - 1) * image_size + start_range + 1
+                pixel_range = np.arange(start_range, end_range, image_size)
+                sample_range_x = np.round(grid_x, 1)
+                sample_range_y = np.round(grid_y, 1)
+                plt.xticks(pixel_range, sample_range_x)
+                plt.yticks(pixel_range, sample_range_y)
+                plt.xlabel("z[0]")
+                plt.ylabel("z[1]")
+                plt.imshow(figure, cmap='Greys_r')
+                plt.savefig(filepath)
+                if self.show:
+                    plt.show()
+                plt.close('all')
+
             else:
-                filename = "latent.png"
-            filepath = os.path.join(self.image_directory, filename)
-            # display a 30x30 2D manifold of digits
-            n = 30
-            image_size = 28
-            figure = np.zeros((image_size * n, image_size * n))
-            # linearly spaced coordinates corresponding to the 2D plot
-            # of digit classes in the latent space
-            grid_x = np.linspace(-4, 4, n)
-            grid_y = np.linspace(-4.5, 3.5, n)[::-1]
+                if test_mode:
+                    filename = "latent_test.png"
+                else:
+                    filename = "latent.png"
+                filepath = os.path.join(self.image_directory, filename)
+                # display a latent representation
+                n = 30
+                image_size = 224
+                figure = np.zeros((image_size * n, image_size * n))
+                # linearly spaced coordinates corresponding to the 2D plot
+                # of digit classes in the latent space
+                grid_x = np.linspace(-4, 4, n)
+                grid_y = np.linspace(-4.5, 3.5, n)[::-1]
 
-            for i, yi in enumerate(grid_y):
-                for j, xi in enumerate(grid_x):
-                    dummy_gaussian = np.array([[0, 0, 1, 1]])
-                    z_sample = np.array([[xi, yi]])
-                    x_decoded = decoder.predict([dummy_gaussian, z_sample])
-                    digit = x_decoded[1].reshape(image_size, image_size)
-                    figure[i * image_size: (i + 1) * image_size,
-                    j * image_size: (j + 1) * image_size] = digit
+                for i, yi in enumerate(grid_y):
+                    for j, xi in enumerate(grid_x):
+                        parameter_tuple = (np.zeros(self.latent_dimension), np.ones(self.latent_dimension))
+                        dummy_gaussian = np.array(np.concatenate(parameter_tuple))
+                        z_sample = np.array([[xi, yi]])
+                        x_decoded = decoder.predict([dummy_gaussian, z_sample])
+                        digit = x_decoded[1].reshape(image_size, image_size)
+                        figure[i * image_size: (i + 1) * image_size,
+                        j * image_size: (j + 1) * image_size] = digit
 
-            plt.figure(figsize=(10, 10))
-            start_range = image_size // 2
-            end_range = (n - 1) * image_size + start_range + 1
-            pixel_range = np.arange(start_range, end_range, image_size)
-            sample_range_x = np.round(grid_x, 1)
-            sample_range_y = np.round(grid_y, 1)
-            plt.xticks(pixel_range, sample_range_x)
-            plt.yticks(pixel_range, sample_range_y)
-            plt.xlabel("z[0]")
-            plt.ylabel("z[1]")
-            plt.imshow(figure, cmap='Greys_r')
-            plt.savefig(filepath)
-            if self.show:
-                plt.show()
-            plt.close('all')
-
-        else:
-            if test_mode:
-                filename = "latent_test.png"
-            else:
-                filename = "latent.png"
-            filepath = os.path.join(self.image_directory, filename)
-            # display a latent representation
-            n = 30
-            image_size = 224
-            figure = np.zeros((image_size * n, image_size * n))
-            # linearly spaced coordinates corresponding to the 2D plot
-            # of digit classes in the latent space
-            grid_x = np.linspace(-4, 4, n)
-            grid_y = np.linspace(-4.5, 3.5, n)[::-1]
-
-            for i, yi in enumerate(grid_y):
-                for j, xi in enumerate(grid_x):
-                    dummy_gaussian = np.array([[0, 0, 1, 1]])
-                    z_sample = np.array([[xi, yi]])
-                    x_decoded = decoder.predict([dummy_gaussian, z_sample])
-                    digit = x_decoded[1].reshape(image_size, image_size)
-                    figure[i * image_size: (i + 1) * image_size,
-                    j * image_size: (j + 1) * image_size] = digit
-
-            plt.figure(figsize=(10, 10))
-            start_range = image_size // 2
-            end_range = (n - 1) * image_size + start_range + 1
-            pixel_range = np.arange(start_range, end_range, image_size)
-            sample_range_x = np.round(grid_x, 1)
-            sample_range_y = np.round(grid_y, 1)
-            plt.xticks(pixel_range, sample_range_x)
-            plt.yticks(pixel_range, sample_range_y)
-            plt.xlabel("z[0]")
-            plt.ylabel("z[1]")
-            plt.imshow(figure, cmap='Greys_r')
-            plt.savefig(filepath)
-            if self.show:
-                plt.show()
-            plt.close('all')
+                plt.figure(figsize=(10, 10))
+                start_range = image_size // 2
+                end_range = (n - 1) * image_size + start_range + 1
+                pixel_range = np.arange(start_range, end_range, image_size)
+                sample_range_x = np.round(grid_x, 1)
+                sample_range_y = np.round(grid_y, 1)
+                plt.xticks(pixel_range, sample_range_x)
+                plt.yticks(pixel_range, sample_range_y)
+                plt.xlabel("z[0]")
+                plt.ylabel("z[1]")
+                plt.imshow(figure, cmap='Greys_r')
+                plt.savefig(filepath)
+                if self.show:
+                    plt.show()
+                plt.close('all')
 
 
     def train(self):
