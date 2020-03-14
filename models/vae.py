@@ -383,16 +383,16 @@ class VAE:
             if has_validation_set:
                 self.x_val = operations.normalize(self.x_val)
 
-            self.gaussian_train = operations.get_gaussian_parameters(self.x_train)
-            self.gaussian_test = operations.get_gaussian_parameters(self.x_test)
+            self.gaussian_train = operations.get_gaussian_parameters(self.x_train, latent_dimension)
+            self.gaussian_test = operations.get_gaussian_parameters(self.x_test, latent_dimension)
             if has_validation_set:
-                self.gaussian_val = operations.get_gaussian_parameters(self.x_val)
+                self.gaussian_val = operations.get_gaussian_parameters(self.x_val, latent_dimension)
         else:
             self.x_train, self.x_val, self.x_test, self.y_train, self.y_val, self.y_test = GenericLoader('chest_xray').load()
-            self.gaussian_train = operations.get_gaussian_parameters(self.x_train)
-            self.gaussian_test = operations.get_gaussian_parameters(self.x_test)
+            self.gaussian_train = operations.get_gaussian_parameters(self.x_train, latent_dimension)
+            self.gaussian_test = operations.get_gaussian_parameters(self.x_test, latent_dimension)
             if has_validation_set:
-                self.gaussian_val = operations.get_gaussian_parameters(self.x_val)
+                self.gaussian_val = operations.get_gaussian_parameters(self.x_val, latent_dimension)
 
         self.x_train_length = len(self.x_train)
         self.x_test_length = len(self.x_test)
@@ -615,7 +615,7 @@ class VAE:
             model_name (string): which model is using this function
         """
         encoder, decoder = models
-        test_gaussian = operations.get_gaussian_parameters(self.x_test)
+        test_gaussian = operations.get_gaussian_parameters(self.x_test, self.latent_dimension)
         os.makedirs(self.image_directory, exist_ok=True)
         if test_mode:
             filename = "vae_mean_test.png"

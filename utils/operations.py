@@ -14,13 +14,15 @@ def standardize(target_matrix, reference_matrix):
     return standardized_matrix
 
 
-def get_gaussian_parameters(data):
+def get_gaussian_parameters(data, latent_dimension):
     """
-    Grab the TensorFlow Keras incarnation of the MNIST data set.
-    :return: A NumPy array of MNIST training and test sets.
+    Construct dummy Gaussian parameters to be fed as input into a variational auto-encoder.
+    :param data: A NumPy array of data points.
+    :return: A NumPy array of means and standard deviations, each for the standard Gaussian, on the latent space of a
+    variational auto-encoder.
     """
-    mean_array = np.zeros(shape=(len(data), 2))
-    covariance_array = np.ones(shape=(len(data), 2))
+    mean_array = np.zeros(shape=(len(data), latent_dimension))
+    covariance_array = np.ones(shape=(len(data), latent_dimension))
     gaussian_parameters = np.concatenate((mean_array, covariance_array), axis=-1)
     return gaussian_parameters
 
