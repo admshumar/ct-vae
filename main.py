@@ -56,7 +56,7 @@ vae = ConvolutionalVAE(is_mnist=args.is_mnist,
                        encoder_activation=args.enc_activation,
                        decoder_activation=args.dec_activation,
                        final_activation=args.final_activation,
-                       learning_rate_initial=args.lr,
+                       learning_rate_initial=args.learning_rate,
                        beta=args.beta,
                        batch_size=args.batch_size,
                        latent_dimension=args.latent_dim)
