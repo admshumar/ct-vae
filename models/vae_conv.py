@@ -11,10 +11,10 @@ from tensorflow.keras.layers import *
 from tensorflow.keras.models import Model
 from tensorflow.keras.utils import plot_model
 
-from models.losses.losses import EncodingLoss
-from utils import logs, plots
-from models.vae import VAE
 from models.layers.vae_layers import Reparametrization
+from models.losses.losses import EncodingLoss
+from models.vae import VAE
+from utils import logs, plots
 
 
 class ConvolutionalVAE(VAE):

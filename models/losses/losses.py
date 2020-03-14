@@ -16,8 +16,9 @@ class EncodingLoss(Loss):
             autoencoder's generative model.
         :return: A float indicating the encoding loss.
         """
-        mean = y_pred[:, 0:2]
-        logarithmic_covariance = y_pred[:, 2:]
+        latent_dimension = len(y_pred[0, :])
+        mean = y_pred[:, 0:latent_dimension]
+        logarithmic_covariance = y_pred[:, latent_dimension:]
         kullback_leibler_divergence_vector = \
             -1 - logarithmic_covariance \
             + k.square(mean) + k.exp(logarithmic_covariance)
