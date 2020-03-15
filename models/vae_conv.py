@@ -181,7 +181,7 @@ class ConvolutionalVAE(VAE):
 
         for i in range(self.depth - 2, -1, -1):
             number_of_filters = self.channel_size*(2**i)
-            z = self.deconv_block(z, number_of_filters)
+            x = self.deconv_block(x, number_of_filters)
 
         decoder_output = [gaussian, x]
         decoder = Model([decoder_gaussian_input, decoder_latent_input], decoder_output, name='decoder')
