@@ -49,6 +49,7 @@ vae = ConvolutionalVAE(is_mnist=args.is_mnist,
                        batch_size=args.batch_size,
                        latent_dimension=args.latent_dim,
                        channel_size=args.channels,
-                       depth=args.depth)
+                       depth=args.depth,
+                       early_stopping_delta=1e-2)
 vae.train()
 del vae

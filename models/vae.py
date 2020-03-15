@@ -190,7 +190,7 @@ class VAE:
                  enable_batch_normalization=True,
                  enable_dropout=True,
                  enable_early_stopping=False,
-                 early_stopping_patience=10,
+                 early_stopping_patience=20,
                  enable_lr_reduction=False,
                  lr_reduction_patience=10,
                  enable_logging=True,
@@ -491,7 +491,7 @@ class VAE:
         self.auto_encoder_mnist_input = Input(shape=self.mnist_shape, name='ae_mnist')
 
         """
-        Callbacks to TensorBoard for observing the model structure and network training curves.
+        Callbacks.
         """
         self.tensorboard_callback = TensorBoard(log_dir=os.path.join(self.experiment_directory, 'tensorboard_logs'),
                                                 histogram_freq=1,
