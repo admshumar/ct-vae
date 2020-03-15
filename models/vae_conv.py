@@ -95,14 +95,7 @@ class ConvolutionalVAE(VAE):
                                                final_activation=final_activation,
                                                model_name=model_name)
 
-    def define_encoder(self):
-        if self.is_mnist:
-            input_tensor = self.encoder_mnist_input
-            z = Reshape((28, 28, 1))(input_tensor)
-        else:
-            input_tensor = Input(shape=self.x_train.shape[1:], name='enc_input_tensor')
-            z = input_tensor
-
+    def conv_block(self, z):
         z = Conv2D(8, kernel_size=(3, 3), padding='same', activation=self.encoder_activation)(z)
         if self.enable_batch_normalization:
             z = BatchNormalization()(z)
@@ -114,18 +107,22 @@ class ConvolutionalVAE(VAE):
             z = BatchNormalization()(z)
         if self.enable_dropout:
             z = Dropout(rate=self.dropout_rate, seed=17)(z)
+        return z
 
-        z = Conv2D(16, kernel_size=(3, 3), padding='same', activation=self.encoder_activation)(z)
-        if self.enable_batch_normalization:
-            z = BatchNormalization()(z)
-        if self.enable_dropout:
-            z = Dropout(rate=self.dropout_rate, seed=17)(z)
 
-        z = Conv2D(16, kernel_size=(3, 3), strides=(2, 2), padding='same', activation=self.encoder_activation)(z)
-        if self.enable_batch_normalization:
-            z = BatchNormalization()(z)
-        if self.enable_dropout:
-            z = Dropout(rate=self.dropout_rate, seed=17)(z)
+    def define_encoder(self):
+        if self.is_mnist:
+            input_tensor = self.encoder_mnist_input
+            z = Reshape((28, 28, 1))(input_tensor)
+        else:
+            input_tensor = Input(shape=self.x_train.shape[1:], name='enc_input_tensor')
+            z = input_tensor
+
+        z = self.conv_block(z)
+        z = self.conv_block(z)
+        z = self.conv_block(z)
+        z = self.conv_block(z)
+        z = self.conv_block(z)
 
         z = Flatten()(z)
         z_gaussian = Dense(self.gaussian_dimension, name="gaussian")(z)
