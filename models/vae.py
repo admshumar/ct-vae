@@ -389,6 +389,10 @@ class VAE:
                 self.gaussian_val = operations.get_gaussian_parameters(self.x_val, latent_dimension)
         else:
             self.x_train, self.x_val, self.x_test, self.y_train, self.y_val, self.y_test = GenericLoader('chest_xray').load()
+            self.x_train = operations.normalize(self.x_train)
+            self.x_test = operations.normalize(self.x_test)
+            if has_validation_set:
+                self.x_val = operations.normalize(self.x_val)
             self.gaussian_train = operations.get_gaussian_parameters(self.x_train, latent_dimension)
             self.gaussian_test = operations.get_gaussian_parameters(self.x_test, latent_dimension)
             if has_validation_set:

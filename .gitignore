@@ -3,6 +3,9 @@ data/
 .idea/
 scratch/
 run.sh
+scratch.py
+check_devices.py
+test.py
 
 # BOILERPLATE
 # Byte-compiled / optimized / DLL files
