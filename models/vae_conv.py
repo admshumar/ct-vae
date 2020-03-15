@@ -55,7 +55,7 @@ class ConvolutionalVAE(VAE):
                  encoder_activation='relu',
                  decoder_activation='relu',
                  final_activation='sigmoid',
-                 depth=1,
+                 depth=5,
                  channel_size=8
                  ):
         model_name = 'vae_conv'

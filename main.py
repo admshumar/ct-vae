@@ -5,6 +5,10 @@ import os
 parser = argparse.ArgumentParser(description="A TensorFlow/Keras variational autoencoder.")
 parser.add_argument("-b", "--batch_size", help="Batch size. (Default: 5)",
                     type=int, default=5)
+parser.add_argument("-c", "--channels", help="Number of channels for the first convolution map. (Default: 8)",
+                    type=int, default=8)
+parser.add_argument("-d", "--depth", help="Number downsampling/upsampling maps to apply in the encoder/decoder. (Default: 5)",
+                    type=int, default=5)
 parser.add_argument("-e", "--epochs", help="Number of epochs. (Default: 5)",
                     type=int, default=5)
 parser.add_argument("-l", "--logging", help="Log training. (Default: True)",
@@ -31,22 +35,6 @@ parser.add_argument("--sgd", help="Train with stochastic gradient descent. (Defa
                     type=bool, default=True)
 args = parser.parse_args()
 
-"""
-is_mnist = args.is_mnist
-epochs = args.epochs
-early_stop = args.early_stop
-logging = args.logging
-sgd = args.sgd
-enc_activation = args.enc_activation
-dec_activation = args.dec_activation
-final_activation = args.final_activation
-lr = args.learning_rate
-beta = args.beta
-batch_size = args.batch_size
-latent_dim = args.latent_dim
-gpu = args.gpu
-"""
-
 os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpu)
 vae = ConvolutionalVAE(is_mnist=args.is_mnist,
                        number_of_epochs=args.epochs,
@@ -59,6 +47,8 @@ vae = ConvolutionalVAE(is_mnist=args.is_mnist,
                        learning_rate_initial=args.learning_rate,
                        beta=args.beta,
                        batch_size=args.batch_size,
-                       latent_dimension=args.latent_dim)
+                       latent_dimension=args.latent_dim,
+                       channel_size=args.channels,
+                       depth=args.depth)
 vae.train()
 del vae
