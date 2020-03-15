@@ -179,7 +179,7 @@ class ConvolutionalVAE(VAE):
         x = Dense(convolution_dimension, activation=self.decoder_activation)(x)
         x = Reshape((7, 7, 128))(x)
 
-        for i in range(self.depth - 2, -1, -1):
+        for i in range(self.depth - 1, -1, -1):
             number_of_filters = self.channel_size*(2**i)
             x = self.deconv_block(x, number_of_filters)
 
