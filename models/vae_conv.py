@@ -170,14 +170,17 @@ class ConvolutionalVAE(VAE):
         decoder_latent_input = Input(shape=encoder_output[1].shape[1:], name='latent_input')
         x = decoder_latent_input
         gaussian = decoder_gaussian_input
-        convolution_dimension = (7 ** 2) * 128
+        image_dimension = self.x_train.shape[1]
+        latent_image_dimension = image_dimension/(2**self.depth)
+        latent_channel_size = self.channel_size * (2**(self.depth - 1))
+        convolution_dimension = (latent_image_dimension ** 2) * latent_channel_size
 
         # Needed to prevent Keras from complaining that nothing was done to this tensor:
         identity_lambda = Lambda(lambda w: w, name="dec_identity_lambda")
         gaussian = identity_lambda(gaussian)
 
         x = Dense(convolution_dimension, activation=self.decoder_activation)(x)
-        x = Reshape((7, 7, 128))(x)
+        x = Reshape((latent_image_dimension, latent_image_dimension, latent_channel_size))(x)
 
         for i in range(self.depth - 2, -1, -1):
             number_of_filters = self.channel_size*(2**i)
