@@ -172,8 +172,10 @@ class ConvolutionalVAE(VAE):
         gaussian = decoder_gaussian_input
         image_dimension = self.x_train.shape[1]
         latent_image_dimension = image_dimension/(2**self.depth)
+        latent_image_dimension = int(latent_image_dimension)
         latent_channel_size = self.channel_size * (2**(self.depth - 1))
         convolution_dimension = (latent_image_dimension ** 2) * latent_channel_size
+        convolution_dimension = int(convolution_dimension)
 
         # Needed to prevent Keras from complaining that nothing was done to this tensor:
         identity_lambda = Lambda(lambda w: w, name="dec_identity_lambda")
