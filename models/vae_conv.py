@@ -95,20 +95,48 @@ class ConvolutionalVAE(VAE):
                                                final_activation=final_activation,
                                                model_name=model_name)
 
-    def conv_block(self, z):
-        z = Conv2D(8, kernel_size=(3, 3), padding='same', activation=self.encoder_activation)(z)
+    def conv_block(self, z, number_of_filters):
+        z = Conv2D(filters=number_of_filters,
+                   kernel_size=(3, 3),
+                   padding='same',
+                   activation=self.encoder_activation)(z)
         if self.enable_batch_normalization:
             z = BatchNormalization()(z)
         if self.enable_dropout:
             z = Dropout(rate=self.dropout_rate, seed=17)(z)
 
-        z = Conv2D(8, kernel_size=(3, 3), strides=(2, 2), padding='same', activation=self.encoder_activation)(z)
+        z = Conv2D(filters=number_of_filters,
+                   kernel_size=(3, 3),
+                   strides=(2, 2),
+                   padding='same',
+                   activation=self.encoder_activation)(z)
         if self.enable_batch_normalization:
             z = BatchNormalization()(z)
         if self.enable_dropout:
             z = Dropout(rate=self.dropout_rate, seed=17)(z)
         return z
 
+    def deconv_block(self, z, number_of_filters):
+        z = Conv2DTranspose(filters=number_of_filters,
+                            kernel_size=(3, 3),
+                            strides=(2, 2),
+                            padding='same',
+                            activation=self.encoder_activation)(z)
+        if self.enable_batch_normalization:
+            z = BatchNormalization()(z)
+        if self.enable_dropout:
+            z = Dropout(rate=self.dropout_rate, seed=17)(z)
+
+        z = Conv2D(filters=number_of_filters,
+                   kernel_size=(3, 3),
+                   padding='same',
+                   activation=self.encoder_activation)(z)
+        if self.enable_batch_normalization:
+            z = BatchNormalization()(z)
+        if self.enable_dropout:
+            z = Dropout(rate=self.dropout_rate, seed=17)(z)
+
+        return z
 
     def define_encoder(self):
         if self.is_mnist:
@@ -118,11 +146,11 @@ class ConvolutionalVAE(VAE):
             input_tensor = Input(shape=self.x_train.shape[1:], name='enc_input_tensor')
             z = input_tensor
 
-        z = self.conv_block(z)
-        z = self.conv_block(z)
-        z = self.conv_block(z)
-        z = self.conv_block(z)
-        z = self.conv_block(z)
+        z = self.conv_block(z, 8)
+        z = self.conv_block(z, 16)
+        z = self.conv_block(z, 32)
+        z = self.conv_block(z, 64)
+        z = self.conv_block(z, 128)
 
         z = Flatten()(z)
         z_gaussian = Dense(self.gaussian_dimension, name="gaussian")(z)
@@ -140,35 +168,20 @@ class ConvolutionalVAE(VAE):
         decoder_latent_input = Input(shape=encoder_output[1].shape[1:], name='latent_input')
         x = decoder_latent_input
         gaussian = decoder_gaussian_input
-        convolution_dimension = (56**2)*16
+        convolution_dimension = (7 ** 2) * 128
 
         # Needed to prevent Keras from complaining that nothing was done to this tensor:
         identity_lambda = Lambda(lambda w: w, name="dec_identity_lambda")
         gaussian = identity_lambda(gaussian)
 
         x = Dense(convolution_dimension, activation=self.decoder_activation)(x)
-        x = Reshape((56, 56, 16))(x)
-        x = Conv2DTranspose(8,
-                            kernel_size=(3, 3),
-                            strides=(2, 2),
-                            padding='same',
-                            activation=self.decoder_activation)(x)
-        if self.enable_batch_normalization:
-            x = BatchNormalization()(x)
-        if self.enable_dropout:
-            x = Dropout(rate=self.dropout_rate, seed=17)(x)
+        x = Reshape((7, 7, 128))(x)
 
-        x = Conv2DTranspose(1,
-                            kernel_size=(3, 3),
-                            strides=(2, 2),
-                            padding='same',
-                            activation=self.decoder_activation)(x)
-        if self.enable_batch_normalization:
-            x = BatchNormalization()(x)
-        if self.enable_dropout:
-            x = Dropout(rate=self.dropout_rate, seed=17)(x)
-
-        # x = Reshape((28, 28))(x)
+        x = self.deconv_block(x, 64)
+        x = self.deconv_block(x, 32)
+        x = self.deconv_block(x, 16)
+        x = self.deconv_block(x, 8)
+        x = self.deconv_block(x, 1)
 
         decoder_output = [gaussian, x]
         decoder = Model([decoder_gaussian_input, decoder_latent_input], decoder_output, name='decoder')
@@ -195,7 +208,7 @@ class ConvolutionalVAE(VAE):
         plot_model(auto_encoder, to_file=os.path.join(self.image_directory, 'auto_encoder.png'), show_shapes=True)
         auto_encoder.compile(optimizers.Adam(lr=self.learning_rate),
                              loss=[encoding_loss, reconstruction_loss],
-                             loss_weights=[self.beta, 224**2])
+                             loss_weights=[self.beta, 224 ** 2])
         return auto_encoder, encoder, decoder
 
     def get_fit_args(self):
