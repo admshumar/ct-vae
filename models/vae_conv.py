@@ -55,8 +55,12 @@ class ConvolutionalVAE(VAE):
                  encoder_activation='relu',
                  decoder_activation='relu',
                  final_activation='sigmoid',
+                 depth=1,
+                 channel_size=8
                  ):
         model_name = 'vae_conv'
+        self.depth = depth
+        self.channel_size = channel_size
         super(ConvolutionalVAE, self).__init__(deep=deep,
                                                enable_activation=enable_activation,
                                                enable_augmentation=enable_augmentation,
@@ -146,11 +150,9 @@ class ConvolutionalVAE(VAE):
             input_tensor = Input(shape=self.x_train.shape[1:], name='enc_input_tensor')
             z = input_tensor
 
-        z = self.conv_block(z, 8)
-        z = self.conv_block(z, 16)
-        z = self.conv_block(z, 32)
-        z = self.conv_block(z, 64)
-        z = self.conv_block(z, 128)
+        for i in range(0, self.depth):
+            number_of_filters = self.channel_size*(2**i)
+            z = self.conv_block(z, number_of_filters)
 
         z = Flatten()(z)
         z_gaussian = Dense(self.gaussian_dimension, name="gaussian")(z)
@@ -177,11 +179,9 @@ class ConvolutionalVAE(VAE):
         x = Dense(convolution_dimension, activation=self.decoder_activation)(x)
         x = Reshape((7, 7, 128))(x)
 
-        x = self.deconv_block(x, 64)
-        x = self.deconv_block(x, 32)
-        x = self.deconv_block(x, 16)
-        x = self.deconv_block(x, 8)
-        x = self.deconv_block(x, 1)
+        for i in range(self.depth - 2, -1, -1):
+            number_of_filters = self.channel_size*(2**i)
+            z = self.deconv_block(z, number_of_filters)
 
         decoder_output = [gaussian, x]
         decoder = Model([decoder_gaussian_input, decoder_latent_input], decoder_output, name='decoder')
