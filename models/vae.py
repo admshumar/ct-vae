@@ -186,6 +186,7 @@ class VAE:
 
     def __init__(self,
                  deep=True,
+                 predict=False,
                  enable_activation=True,
                  enable_augmentation=False,
                  enable_batch_normalization=True,
@@ -235,7 +236,7 @@ class VAE:
                  final_activation='sigmoid',
                  model_name='vae',
                  from_vae=True):
-
+        self.predict = predict
         self.model_name = model_name
         self.enable_logging = enable_logging
         self.enable_label_smoothing = (smoothing_alpha > 0)
@@ -389,7 +390,8 @@ class VAE:
             if has_validation_set:
                 self.gaussian_val = operations.get_gaussian_parameters(self.x_val, latent_dimension)
         else:
-            self.x_train, self.x_val, self.x_test, self.y_train, self.y_val, self.y_test = GenericLoader('chest_xray').load()
+            self.x_train, self.x_val, self.x_test, self.y_train, self.y_val, self.y_test = GenericLoader(
+                'chest_xray').load()
             self.x_train = operations.normalize(self.x_train)
             self.x_test = operations.normalize(self.x_test)
             if has_validation_set:
@@ -480,10 +482,12 @@ class VAE:
         self.directory_number = self.directory_counter.count()
         self.hyper_parameter_string = '_'.join([self.hyper_parameter_string, 'x{:02d}'.format(self.directory_number)])
 
-        directory, image_directory = directories.DirectoryCounter.make_output_directory(self.hyper_parameter_string,
-                                                                                        self.model_name)
+        directory, image_directory = directories.DirectoryCounter.get_output_directory(self.hyper_parameter_string,
+                                                                                       self.model_name)
         self.experiment_directory = directory
         self.image_directory = image_directory
+        if not self.predict:
+            directories.DirectoryCounter.make_output_directory(self.hyper_parameter_string, self.model_name)
 
         """
         Tensorflow Input instances for declaring model inputs.
@@ -708,7 +712,6 @@ class VAE:
                 if self.show:
                     plt.show()
                 plt.close('all')
-
 
     def train(self):
         """
