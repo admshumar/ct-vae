@@ -71,17 +71,17 @@ vae = ConvolutionalVAE(is_mnist=args.is_mnist,
 model = vae.load_model_weights(args.weight_directory)
 
 # Specify data for the autoencoder
-data = [vae.gaussian_train, vae.x_train]
+data = [vae.gaussian_test, vae.x_test]
 
 # Get a prediction from the autoencoder
 reconstructed_data = vae.get_prediction(model, data=data, latent_only=True)
 
-image = vae.x_test[0]
+image = vae.x_test[args.idx]
 image = np.reshape(image, image.shape[0:2])
 plt.imsave(f'x_test_{args.idx}.png', image)
 plt.close()
 
-image = reconstructed_data[0]
+image = reconstructed_data[args.idx]
 image = np.reshape(image, image.shape[0:2])
 plt.imshow(image)
 plt.imsave(f'x_test_reconstructed_{args.idx}.png', image)
