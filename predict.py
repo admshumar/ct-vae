@@ -71,7 +71,7 @@ vae = ConvolutionalVAE(is_mnist=args.is_mnist,
 model = vae.load_model_weights(args.weight_directory)
 
 # Specify data for the autoencoder
-data = [vae.gaussian_test, vae.x_test]
+data = [vae.gaussian_train, vae.x_train]
 
 # Get a prediction from the autoencoder
 reconstructed_data = vae.get_prediction(model, data=data, latent_only=True)
