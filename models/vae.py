@@ -16,6 +16,7 @@ from tensorflow.keras.layers import *
 
 from utils import directories, logs, plots
 from utils import classifiers, operations
+from utils.plots import LatentSpaceTSNE
 from utils.labels import OneHotEncoder, Smoother, Flipper, GaussianSoftLabels
 from utils.loaders import MNISTLoader, GenericLoader
 
@@ -596,20 +597,7 @@ class VAE:
         soft_labels = GaussianSoftLabels(x_test_latent, means, covariances, labels=self.y_test_binary)
         return soft_labels.smooth_gaussian_mixture(alpha=self.alpha)
 
-    def save_model_weights(self, model, model_name):
-        """
-        Save the weights of a model to an .h5 file.
-        :param model: A Keras model instance.
-        :param model_name: A string indicating the model's filename.
-        :return: None
-        """
-        model_directory = os.path.join(self.experiment_directory, 'models')
-        model_filepath = os.path.join(model_directory, model_name + '.h5')
-        if not os.path.exists(model_directory):
-            os.makedirs(model_directory)
-        model.save_weights(model_filepath)
-
-    def plot_results(self, models, test_mode=False):
+    def plot_results(self, models):
         """Plots labels and MNIST digits as a function of the 2D latent vector
 
         # Arguments
@@ -621,29 +609,32 @@ class VAE:
         encoder, decoder = models
         test_gaussian = operations.get_gaussian_parameters(self.x_test, self.latent_dimension)
         os.makedirs(self.image_directory, exist_ok=True)
-        if test_mode:
-            filename = "vae_mean_test.png"
-        else:
-            filename = "vae_mean.png"
+
+        filename = "vae_mean.png"
         filepath = os.path.join(self.image_directory, filename)
-        # display a 2D plot of the digit classes in the latent space
+
         z_gaussian, z_data = encoder.predict([test_gaussian, self.x_test], batch_size=self.batch_size)
         z_mean, z_covariance = operations.split_gaussian_parameters(z_gaussian)
-        plt.figure(figsize=(12, 10))
-        plt.scatter(z_mean[:, 0], z_mean[:, 1], c=self.y_test, s=8, alpha=0.3)
-        plt.colorbar(ticks=np.linspace(0, 2, 3))
-        plt.xlabel("z[0]")
-        plt.ylabel("z[1]")
-        plt.savefig(filepath, dpi=200)
-        if self.show:
-            plt.show()
+
+        if self.latent_dimension == 2:
+            # display a 2D plot of the data classes in the latent space
+            plt.figure(figsize=(12, 10))
+            plt.scatter(z_mean[:, 0], z_mean[:, 1], c=self.y_test, s=8, alpha=0.3)
+            plt.colorbar(ticks=np.linspace(0, 2, 3))
+            plt.xlabel("z[0]")
+            plt.ylabel("z[1]")
+            plt.savefig(filepath, dpi=200)
+            if self.show:
+                plt.show()
+        else:
+            # display a 2D t-SNE of the data classes in the latent space
+            plt.figure(figsize=(12, 10))
+            tsne = LatentSpaceTSNE(z_mean, self.y_test, self.experiment_directory)
+            tsne.save_tsne()
 
         if self.latent_dimension == 2:
             if self.is_mnist:
-                if test_mode:
-                    filename = "latent_test.png"
-                else:
-                    filename = "latent.png"
+                filename = "latent.png"
                 filepath = os.path.join(self.image_directory, filename)
                 # display a 30x30 2D manifold of digits
                 n = 30
@@ -681,10 +672,7 @@ class VAE:
                 plt.close('all')
 
             else:
-                if test_mode:
-                    filename = "latent_test.png"
-                else:
-                    filename = "latent.png"
+                filename = "latent.png"
                 filepath = os.path.join(self.image_directory, filename)
                 # display a latent representation
                 n = 30
@@ -767,6 +755,19 @@ class VAE:
             os.path.join(self.experiment_directory, '..', weight_directory, 'models', architecture + '.h5'))
         model.load_weights(filepath)
         return model
+
+    def save_model_weights(self, model, model_name):
+        """
+        Save the weights of a model to an .h5 file.
+        :param model: A Keras model instance.
+        :param model_name: A string indicating the model's filename.
+        :return: None
+        """
+        model_directory = os.path.join(self.experiment_directory, 'models')
+        model_filepath = os.path.join(model_directory, model_name + '.h5')
+        if not os.path.exists(model_directory):
+            os.makedirs(model_directory)
+        model.save_weights(model_filepath)
 
     def save_latent_representation(self, model, data=None, labels=None):
         """
