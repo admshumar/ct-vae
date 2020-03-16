@@ -7,7 +7,7 @@ do
     do
       for d in 4 8 16 32
       do
-        python3 train.py --batch_size=$j --learning_rate=$i --beta=$b --latent_dim=$d --gpu=0
+        python3 train.py --epochs=200 --batch_size=$j --learning_rate=$i --beta=$b --latent_dim=$d --gpu=0
       done
     done
   done
