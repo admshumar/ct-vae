@@ -1,4 +1,6 @@
 #!/bin/bash
+read 'GPU: ' gpu_var
+read 'Epochs: ' epoch_var
 for i in 1e-3 1e-4 1e-5
 do
   for j in 4 8
@@ -7,7 +9,7 @@ do
     do
       for d in 4 8 16 32
       do
-        python3 train.py --epochs=200 --batch_size=$j --learning_rate=$i --beta=$b --latent_dim=$d --gpu=0
+        python3 train.py --epochs=$epoch_var --batch_size=$j --learning_rate=$i --beta=$b --latent_dim=$d --gpu=$gpu_var
       done
     done
   done
