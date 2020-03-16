@@ -78,13 +78,13 @@ reconstructed_data = vae.get_prediction(model, data=data, latent_only=True)
 
 image = vae.x_test[0]
 image = np.reshape(image, image.shape[0:2])
-plt.imsave('x_test.png', image)
+plt.imsave(f'x_test_{args.idx}.png', image)
 plt.close()
 
 image = reconstructed_data[0]
 image = np.reshape(image, image.shape[0:2])
 plt.imshow(image)
-plt.imsave('x_test_reconstructed.png', image)
+plt.imsave(f'x_test_reconstructed_{args.idx}.png', image)
 plt.close()
 
 del vae
