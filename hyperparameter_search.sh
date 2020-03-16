@@ -1,6 +1,6 @@
 #!/bin/bash
-read 'GPU: ' gpu_var
-read 'Epochs: ' epoch_var
+read -ep 'GPU: ' gpu_var
+read -ep 'Epochs: ' epoch_var
 for i in 1e-3 1e-4 1e-5
 do
   for j in 4 8
