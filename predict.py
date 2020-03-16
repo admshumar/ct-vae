@@ -12,13 +12,20 @@ parser.add_argument("-b", "--batch_size", help="Batch size. (Default: 5)",
                     type=int, default=5)
 parser.add_argument("-c", "--channels", help="Number of channels for the first convolution map. (Default: 8)",
                     type=int, default=8)
-parser.add_argument("-d", "--depth", help="Number downsampling/upsampling maps to apply in the encoder/decoder. (Default: 5)", type=int, default=5)
+parser.add_argument("-d", "--depth", help="Number downsampling/upsampling maps to apply in the encoder/decoder. (Default: 5)",
+                    type=int, default=5)
+parser.add_argument("-e", "--epochs", help="Number of epochs. (Default: 5)",
+                    type=int, default=5)
 parser.add_argument("-l", "--logging", help="Log training. (Default: True)",
                     type=bool, default=True)
 parser.add_argument("--beta", help="Beta coefficient of the encoding loss. (Default: 1)",
                     type=float, default=1)
 parser.add_argument("--dec_activation", help="Decoder activation function. (Default: 'relu')",
                     type=str, default='relu')
+parser.add_argument("--early_stop", help="Train with early stopping. (Default: True)",
+                    type=bool, default=True)
+parser.add_argument("--early_stop_patience", help="Early stopping patience. (Default: 20)",
+                    type=int, default=20)
 parser.add_argument("--enc_activation", help="Encoder activation function. (Default: 'relu')",
                     type=str, default='relu')
 parser.add_argument("--final_activation", help="Final activation function. (Default: 'sigmoid')",
