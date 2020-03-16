@@ -42,6 +42,8 @@ parser.add_argument("--lr_plateau_patience", help="Factor for reducing learning 
                     type=float, default=0.1)
 parser.add_argument("--sgd", help="Train with stochastic gradient descent. (Default: True)",
                     type=bool, default=True)
+parser.add_argument("--idx", help="Index of the prediction (Default: 0)",
+                    type=int, default=0)
 args = parser.parse_args()
 
 # weight_directory = os.path.abspath(os.path.join(os.getcwd(), 'data/experiments/vae_conv', args.weight_directory))
