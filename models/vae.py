@@ -735,7 +735,7 @@ class VAE:
 
         return auto_encoder, encoder, decoder
 
-    def load_model_weights(self, weight_directory, architecture='autoencoder'):
+    def load_model_weights(self, weight_directory, architecture='auto_encoder'):
         """
         Load the weights of the model specified by the class constructor.
         :return: None
