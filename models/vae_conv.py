@@ -277,17 +277,6 @@ class ConvolutionalVAE(VAE):
 
         self.plot_results((encoder, decoder))
 
-    def get_prediction(self, model, data=None):
-        """
-        Run a prediction on the given data set.
-        :param model: A Keras model. In this case, either the autoencoder, the encoder, or the decoder.
-        :param data: The data on which to get_prediction. Default is None. If None, then data is set to the training data.
-        :return: The model's prediction of the data.
-        """
-        if data is None:
-            data = self.x_train
-        return model.predict(data)
-
     def generate(self, decoder, number_of_samples=1):
         """
         Generate samples using the decoder of the learned autoencoder's generative model.
