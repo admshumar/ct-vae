@@ -7,11 +7,12 @@ import matplotlib.pyplot as plt
 
 class LatentSpaceTSNE:
     def __init__(self, data, labels, directory, number_of_tnse_components=2):
-        if number_of_tnse_components in set(2, 3):
+        if number_of_tnse_components in (2, 3):
             self.number_of_tnse_components = number_of_tnse_components
         else:
             self.number_of_tnse_components = 2
         self.data = data
+        self.directory = directory
         self.labels = labels
         self.perplexity_list = [5, 10, 30, 50, 100]
         self.color_list = ['#00B7BA', '#FFB86F', '#5E6572', '#6B0504', '#BA5C12']

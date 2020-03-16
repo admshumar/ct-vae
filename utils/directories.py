@@ -20,6 +20,17 @@ class DirectoryCounter:
     def make_output_directory(cls, hyper_parameter_string, model_name):
         """
         Make an output directory indexed by a set of hyperparameters.
+        :return: None
+        """
+        output_directory, image_directory = DirectoryCounter.get_output_directory(hyper_parameter_string, model_name)
+        if not os.path.exists(output_directory):
+            os.makedirs(output_directory)
+            os.makedirs(image_directory)
+
+    @classmethod
+    def get_output_directory(cls, hyper_parameter_string, model_name):
+        """
+        Make an output directory indexed by a set of hyperparameters.
         :return: A string corresponding to the output directory.
         """
         output_directory = os.path.abspath(os.path.join(os.getcwd(),
@@ -29,9 +40,6 @@ class DirectoryCounter:
                                                         model_name,
                                                         hyper_parameter_string))
         image_directory = os.path.abspath(os.path.join(output_directory, 'images'))
-        if not os.path.exists(output_directory):
-            os.makedirs(output_directory)
-            os.makedirs(image_directory)
         return output_directory, image_directory
 
     def __init__(self, hyperparameter_string):
