@@ -42,8 +42,8 @@ parser.add_argument("--lr_plateau_patience", help="Factor for reducing learning 
                     type=float, default=0.1)
 parser.add_argument("--sgd", help="Train with stochastic gradient descent. (Default: True)",
                     type=bool, default=True)
-parser.add_argument("--idx", help="Index of the prediction (Default: 0)",
-                    type=int, default=0)
+parser.add_argument("--number_of_predictions", help="Number of predictions to make. (Default: 1)",
+                    type=int, default=1)
 args = parser.parse_args()
 
 # weight_directory = os.path.abspath(os.path.join(os.getcwd(), 'data/experiments/vae_conv', args.weight_directory))
@@ -76,15 +76,16 @@ data = [vae.gaussian_test, vae.x_test]
 # Get a prediction from the autoencoder
 reconstructed_data = vae.get_prediction(model, data=data, latent_only=True)
 
-image = vae.x_test[args.idx]
-image = np.reshape(image, image.shape[0:2])
-plt.imsave(f'x_test_{args.idx}.png', image)
-plt.close()
+for i in range(args.number_of_predictions):
+    image = vae.x_test[i]
+    image = np.reshape(image, image.shape[0:2])
+    plt.imsave(f'x_test_{i}.png', image)
+    plt.close()
 
-image = reconstructed_data[args.idx]
-image = np.reshape(image, image.shape[0:2])
-plt.imshow(image)
-plt.imsave(f'x_test_reconstructed_{args.idx}.png', image)
-plt.close()
+    image = reconstructed_data[i]
+    image = np.reshape(image, image.shape[0:2])
+    plt.imshow(image)
+    plt.imsave(f'x_test_reconstructed_{i}.png', image)
+    plt.close()
 
 del vae
