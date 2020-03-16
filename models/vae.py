@@ -740,7 +740,7 @@ class VAE:
         Load the weights of the model specified by the class constructor.
         :return: None
         """
-        architecture_set = {'autoencoder', 'encoder', 'decoder'}
+        architecture_set = {'auto_encoder', 'encoder', 'decoder'}
         assert architecture in architecture_set
 
         if architecture == 'encoder':
