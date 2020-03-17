@@ -40,7 +40,7 @@ parser.add_argument("--sgd", help="Train with stochastic gradient descent. (Defa
 args = parser.parse_args()
 
 os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpu)
-vae = ConvolutionalVAE(is_mnist=args.is_mnist,
+vae = ConvolutionalVAE(is_mnist=True, #args.is_mnist,
                        number_of_epochs=args.epochs,
                        enable_early_stopping=args.early_stop,
                        early_stopping_patience=args.early_stop_patience,
