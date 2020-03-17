@@ -194,8 +194,8 @@ class ConvolutionalVAE(VAE):
 
         x = self.deconv_block(x, 1)
         if self.is_mnist:
-            x = Reshape(28, 28)(x)
-            
+            x = Reshape((28, 28))(x)
+
         decoder_output = [gaussian, x]
         decoder = Model([decoder_gaussian_input, decoder_latent_input], decoder_output, name='decoder')
         decoder.summary()
