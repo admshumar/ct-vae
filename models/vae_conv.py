@@ -218,7 +218,7 @@ class ConvolutionalVAE(VAE):
         plot_model(auto_encoder, to_file=os.path.join(self.image_directory, 'auto_encoder.png'), show_shapes=True)
         auto_encoder.compile(optimizers.Adam(lr=self.learning_rate),
                              loss=[encoding_loss, reconstruction_loss],
-                             loss_weights=[self.beta, 224 ** 2])
+                             loss_weights=[self.beta, self.data_dimension])
         return auto_encoder, encoder, decoder
 
     def get_fit_args(self):

@@ -7,6 +7,10 @@ scratch.py
 check_devices.py
 test.py
 vae_conv/
+encoded.npy
+predict_encoder.py
+prediction.npy
+test.sh
 
 # BOILERPLATE
 # Byte-compiled / optimized / DLL files

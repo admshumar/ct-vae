@@ -376,9 +376,9 @@ class VAE:
             if enable_manual_clusters:
                 self.number_of_clusters = number_of_clusters
 
-            self.data_width, self.data_height = self.x_train.shape[1], self.x_train.shape[2]
-            self.data_dimension = self.data_width * self.data_height
-            self.intermediate_dimension = intermediate_dimension
+            #self.data_width, self.data_height = self.x_train.shape[1], self.x_train.shape[2]
+            #self.data_dimension = self.data_width * self.data_height
+            #self.intermediate_dimension = intermediate_dimension
 
             self.x_train = operations.normalize(self.x_train)
             self.x_test = operations.normalize(self.x_test)
@@ -403,6 +403,9 @@ class VAE:
 
         self.x_train_length = len(self.x_train)
         self.x_test_length = len(self.x_test)
+        self.data_width, self.data_height = self.x_train.shape[1], self.x_train.shape[2]
+        self.data_dimension = self.data_width * self.data_height
+        self.intermediate_dimension = intermediate_dimension
 
         """
         Hyperparameters for the neural network.
