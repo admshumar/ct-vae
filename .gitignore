@@ -6,6 +6,7 @@ run.sh
 scratch.py
 check_devices.py
 test.py
+vae_conv/
 
 # BOILERPLATE
 # Byte-compiled / optimized / DLL files
