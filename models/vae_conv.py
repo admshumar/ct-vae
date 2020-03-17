@@ -170,13 +170,26 @@ class ConvolutionalVAE(VAE):
         return encoder, [z_gaussian, z]
 
     def define_decoder(self, encoder_output):
+        """
+        The decoder takes in two input tensors. The first is decoder_gaussian_input, which corresponds to the
+        parameters of Gaussian distributions on latent space. The second is decoder_latent_input, which corresponds
+        to latent space samples obtained from the learned Gaussians via the reparametrization trick.
+        Since decoder_latent_input is a flattened vector, it needs to be reshaped for the decoder's convolution
+        operations. The parameters for reshaping depend upon the number of convolution operations performed by the
+        encoder, hence the arithmetic to obtain latent_image_dimension, latent_channel_size, and convolution_dimension.
+        :param encoder_output: A Keras tensor, the output of the encoder model.
+        :return: A Keras model, the decoder model.
+        """
         decoder_gaussian_input = Input(shape=encoder_output[0].shape[1:], name='gaussian_input')
         decoder_latent_input = Input(shape=encoder_output[1].shape[1:], name='latent_input')
         x = decoder_latent_input
         gaussian = decoder_gaussian_input
+
         image_dimension = self.x_train.shape[1]
         latent_image_dimension = image_dimension/(2**self.depth)
         latent_image_dimension = int(latent_image_dimension)
+        assert latent_image_dimension > 0, "Network depth is too large. Reduce --depth."
+
         latent_channel_size = self.channel_size * (2**(self.depth - 1))
         convolution_dimension = (latent_image_dimension ** 2) * latent_channel_size
         convolution_dimension = int(convolution_dimension)
