@@ -134,16 +134,6 @@ class ConvolutionalVAE(VAE):
             z = BatchNormalization()(z)
         if self.enable_dropout:
             z = Dropout(rate=self.dropout_rate, seed=17)(z)
-
-        z = Conv2D(filters=number_of_filters,
-                   kernel_size=(3, 3),
-                   padding='same',
-                   activation=self.encoder_activation)(z)
-        if self.enable_batch_normalization:
-            z = BatchNormalization()(z)
-        if self.enable_dropout:
-            z = Dropout(rate=self.dropout_rate, seed=17)(z)
-
         return z
 
     def define_encoder(self):
