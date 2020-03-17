@@ -75,7 +75,9 @@ data = [vae.gaussian_test, vae.x_test]
 
 # Get a prediction from the autoencoder
 reconstructed_data = vae.get_prediction(model, data=data, latent_only=True)
+np.save('prediction.npy', reconstructed_data)
 
+"""
 for i in range(args.number_of_predictions):
     image = vae.x_test[i]
     image = np.reshape(image, image.shape[0:2])
@@ -105,5 +107,6 @@ for i in range(args.number_of_predictions):
     plt.imshow(image)
     plt.imsave(f'x_train_reconstructed_{i}.png', image)
     plt.close()
+"""
 
 del vae
