@@ -655,7 +655,7 @@ class VAE:
                 for i, yi in enumerate(grid_y):
                     for j, xi in enumerate(grid_x):
                         parameter_tuple = (np.zeros(self.latent_dimension), np.ones(self.latent_dimension))
-                        dummy_gaussian = np.concatenate(parameter_tuple)
+                        dummy_gaussian = np.asarray([np.concatenate(parameter_tuple)])
                         z_sample = np.array([[xi, yi]])
                         x_decoded = decoder.predict([dummy_gaussian, z_sample])
                         digit = x_decoded[1].reshape(image_size, image_size)
@@ -693,7 +693,7 @@ class VAE:
                 for i, yi in enumerate(grid_y):
                     for j, xi in enumerate(grid_x):
                         parameter_tuple = (np.zeros(self.latent_dimension), np.ones(self.latent_dimension))
-                        dummy_gaussian = np.concatenate(parameter_tuple)
+                        dummy_gaussian = np.asarray([np.concatenate(parameter_tuple)])
                         z_sample = np.array([[xi, yi]])
                         x_decoded = decoder.predict([dummy_gaussian, z_sample])
                         digit = x_decoded[1].reshape(image_size, image_size)
