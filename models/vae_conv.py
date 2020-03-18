@@ -138,11 +138,13 @@ class ConvolutionalVAE(VAE):
 
     def define_encoder(self):
         if self.is_mnist:
-            input_tensor = self.encoder_mnist_input
-            z = Reshape((28, 28, 1))(input_tensor)
+            input_data_tensor = self.encoder_mnist_input
+            z = Reshape((28, 28, 1))(input_data_tensor)
         else:
-            input_tensor = Input(shape=self.x_train.shape[1:], name='enc_input_tensor')
-            z = input_tensor
+            input_data_tensor = Input(shape=self.x_train.shape[1:], name='enc_input_tensor')
+            z = input_data_tensor
+
+        input_gaussian_tensor = self.encoder_gaussian
 
         for i in range(0, self.depth):
             number_of_filters = self.channel_size*(2**i)
@@ -153,7 +155,7 @@ class ConvolutionalVAE(VAE):
         z = Reparametrization(name="latent_samples")(z_gaussian)
         encoder_output = [z_gaussian, z]
 
-        encoder = Model([self.encoder_gaussian, input_tensor], encoder_output, name='encoder')
+        encoder = Model([input_gaussian_tensor, input_data_tensor], encoder_output, name='encoder')
         encoder.summary()
         plot_model(encoder, to_file=os.path.join(self.image_directory, 'encoder.png'), show_shapes=True)
 
@@ -214,7 +216,8 @@ class ConvolutionalVAE(VAE):
             auto_encoder_input = [self.auto_encoder_gaussian, self.auto_encoder_mnist_input]
         else:
             auto_encoder_input_tensor = Input(shape=self.x_train.shape[1:], name='ae_input_tensor')
-            auto_encoder_input = [self.auto_encoder_gaussian, auto_encoder_input_tensor]
+            auto_encoder_gaussian_tensor = Input(shape=self.gaussian_dimension, name="ae_gaussian_tensor")
+            auto_encoder_input = [auto_encoder_gaussian_tensor, auto_encoder_input_tensor]
         latent_space_input = encoder(auto_encoder_input)
         auto_encoder_output = decoder(latent_space_input)
         auto_encoder = Model(auto_encoder_input, auto_encoder_output, name='variational_auto_encoder')

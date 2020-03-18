@@ -1,13 +1,12 @@
 from models.vae_conv import ConvolutionalVAE
 import argparse
 import os
-import matplotlib.pyplot as plt
 import numpy as np
 
 
 parser = argparse.ArgumentParser(description="A trained TensorFlow/Keras variational autoencoder for prediction.")
-parser.add_argument("weight_directory", help="Directory containing the weights of the model.",
-                    type=str)
+#parser.add_argument("weight_directory", help="Directory containing the weights of the model.",
+                    #type=str)
 parser.add_argument("-b", "--batch_size", help="Batch size. (Default: 5)",
                     type=int, default=5)
 parser.add_argument("-c", "--channels", help="Number of channels for the first convolution map. (Default: 8)",
@@ -68,14 +67,18 @@ vae = ConvolutionalVAE(is_mnist=args.is_mnist,
                        early_stopping_delta=1e-2)
 
 # Load an autoencoder's weights
+# model = vae.load_model_weights(args.weight_directory)
+# experiment = '2_5_0.0001_relu_relu_True_True_0.5_0.0001_20_0.01_512_alpha_0.5_x00'
 model = vae.load_model_weights(args.weight_directory)
 
+# directory = os.path.abspath(os.path.join(os.getcwd(), 'data', 'experiments', experiment))
+# filename = os.path.abspath(os.path.join(directory, 'prediction.npy'))
 # Specify data for the autoencoder
 data = [vae.gaussian_test, vae.x_test]
 
 # Get a prediction from the autoencoder
 reconstructed_data = vae.get_prediction(model, data=data, latent_only=True)
-np.save('prediction.npy', reconstructed_data)
+np.save('filename', reconstructed_data)
 
 """
 for i in range(args.number_of_predictions):

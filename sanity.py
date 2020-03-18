@@ -40,8 +40,8 @@ parser.add_argument("--sgd", help="Train with stochastic gradient descent. (Defa
 args = parser.parse_args()
 
 os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpu)
-vae = ConvolutionalVAE(is_mnist=True, #args.is_mnist,
-                       number_of_epochs=50,#args.epochs,
+vae = ConvolutionalVAE(is_mnist=False, #args.is_mnist,
+                       number_of_epochs=2,#args.epochs,
                        enable_early_stopping=args.early_stop,
                        early_stopping_patience=args.early_stop_patience,
                        enable_logging=args.logging,
@@ -53,11 +53,9 @@ vae = ConvolutionalVAE(is_mnist=True, #args.is_mnist,
                        lr_reduction_patience=args.lr_plateau_patience,
                        beta=args.beta,
                        batch_size=args.batch_size,
-                       latent_dimension=args.latent_dim,
+                       latent_dimension=512, #args.latent_dim,
                        channel_size=args.channels,
-                       depth=2,#args.depth,
-                       early_stopping_delta=1e-2,
-                       is_restricted=True,
-                       restriction_labels=[7, 8])
+                       depth=5,#args.depth,
+                       early_stopping_delta=1e-2)
 vae.train()
 del vae

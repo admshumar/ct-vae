@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import json
 import os
 import numpy as np
 
@@ -12,7 +13,7 @@ from time import time
 
 from tensorflow.keras.callbacks import TensorBoard, EarlyStopping, ReduceLROnPlateau, TerminateOnNaN
 from tensorflow.keras.datasets import mnist
-from tensorflow.keras.layers import *
+from tensorflow.keras.layers import Input, LeakyReLU
 
 from utils import directories, logs, plots
 from utils import classifiers, operations
@@ -272,10 +273,6 @@ class VAE:
 
         self.has_validation_set = has_validation_set
 
-        """
-        You need to make sure that you're passing the data used in training the VAE to the classifier. This includes
-        the entire train-val-test split.
-        """
         if from_vae:
             pass
             # x_train, y_train, x_val, y_val, x_test, y_test = VAE.get_split_mnist_data()
@@ -552,8 +549,8 @@ class VAE:
 
     def get_fit_args(self):
         """
-        Define a list of NumPy inputs and NumPy outputs of the Keras model. These are the actual data that flow through
-        the Keras model.
+        Define a list of NumPy inputs and NumPy outputs of the Keras model. These are the actual data that
+        flow through the Keras model.
         :return: A list of arguments for the fit method of the Keras model.
         """
         return [[self.gaussian_train, self.x_train], [self.gaussian_train, self.x_train]]
@@ -737,7 +734,11 @@ class VAE:
         if self.latent_dimension == 2:
             self.plot_results((encoder, decoder))
         # self.report_latent_space_classifiers(encoder)
-        self.save_latent_representation(encoder, labels=self.y_train)
+        self.save_latent_representation(encoder,
+                                        data_filename='x_train_latent.npy')
+        self.save_latent_representation(encoder,
+                                        data=[self.gaussian_test, self.x_test],
+                                        data_filename='x_test_latent.npy')
 
         return auto_encoder, encoder, decoder
 
@@ -747,7 +748,7 @@ class VAE:
         :return: None
         """
         architecture_set = {'auto_encoder', 'encoder', 'decoder'}
-        assert architecture in architecture_set
+        assert architecture in architecture_set, "Invalid model name. Model names are: 'encoder', 'decoder', 'auto_encoder'."
 
         if architecture == 'encoder':
             model, _ = self.define_encoder()
@@ -775,7 +776,7 @@ class VAE:
             os.makedirs(model_directory)
         model.save_weights(model_filepath)
 
-    def save_latent_representation(self, model, data=None, labels=None):
+    def save_latent_representation(self, model, data=None, labels=None, data_filename=None, labels_filename=None):
         """
         Save a model's predictions as NumPy arrays. If no data are specified, then the variational autoencoder's
         training set is given as input to the model.
@@ -788,11 +789,19 @@ class VAE:
             data = [self.gaussian_train, self.x_train]
         prediction = model.predict(data)
         prediction = prediction[1]
-        file_path = os.path.abspath(os.path.join(self.experiment_directory, 'latent_data.npy'))
+
+        if data_filename:
+            file_path = os.path.abspath(os.path.join(self.experiment_directory, data_filename))
+        else:
+            file_path = os.path.abspath(os.path.join(self.experiment_directory, 'latent_data.npy'))
         np.save(file_path, prediction)
+
         if labels is not None:
-            file_path = os.path.abspath(os.path.join(self.experiment_directory, 'latent_labels.npy'))
-            np.save(file_path, labels, allow_pickle=True)
+            if labels_filename:
+                file_path = os.path.abspath(os.path.join(self.experiment_directory, labels_filename))
+            else:
+                file_path = os.path.abspath(os.path.join(self.experiment_directory, 'latent_labels.npy'))
+            np.save(file_path, labels)
 
     def get_prediction(self, model, data=None, latent_only=True):
         """
@@ -885,3 +894,8 @@ class VAE:
             np.save(os.path.join(self.experiment_directory, 'a_train.npy'), self.a_train)
             np.save(os.path.join(self.experiment_directory, 'a_val.npy'), self.a_val)
             np.save(os.path.join(self.experiment_directory, 'a_test.npy'), self.a_test)
+
+    def save_experiment_settings(self):
+        filename = os.path.abspath(os.path.join(self.experiment_directory, 'experiment.json'))
+        with open(filename, 'w') as experiment:
+            json.dump(self.__dict__, experiment, indent=4)
