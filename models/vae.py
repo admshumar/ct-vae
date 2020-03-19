@@ -898,8 +898,7 @@ class VAE:
 
     def get_experiment_dictionary(self):
         """
-        Return the class dictionary, absent the dictionary elements whose values are numpy.ndarrays, as this
-        type is not compatible with dictionaries.
+        Return the class dictionary, absent non-compatible types.
         :return: A dictionary of settings for the experiment.
         """
         return {key: self.__dict__[key]
