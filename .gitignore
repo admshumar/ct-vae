@@ -3,11 +3,12 @@ data/
 .idea/
 scratch/
 run.sh
-scratch.py
+scratch_view.py
 check_devices.py
 test.py
 vae_conv/
-encoded.npy
+*.npy
+scratch*
 predict_encoder.py
 prediction.npy
 test.sh

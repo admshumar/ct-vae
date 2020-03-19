@@ -373,9 +373,9 @@ class VAE:
             if enable_manual_clusters:
                 self.number_of_clusters = number_of_clusters
 
-            #self.data_width, self.data_height = self.x_train.shape[1], self.x_train.shape[2]
-            #self.data_dimension = self.data_width * self.data_height
-            #self.intermediate_dimension = intermediate_dimension
+            # self.data_width, self.data_height = self.x_train.shape[1], self.x_train.shape[2]
+            # self.data_dimension = self.data_width * self.data_height
+            # self.intermediate_dimension = intermediate_dimension
 
             self.x_train = operations.normalize(self.x_train)
             self.x_test = operations.normalize(self.x_test)
@@ -739,6 +739,7 @@ class VAE:
         self.save_latent_representation(encoder,
                                         data=[self.gaussian_test, self.x_test],
                                         data_filename='x_test_latent.npy')
+        self.save_experiment_settings()
 
         return auto_encoder, encoder, decoder
 
@@ -895,7 +896,18 @@ class VAE:
             np.save(os.path.join(self.experiment_directory, 'a_val.npy'), self.a_val)
             np.save(os.path.join(self.experiment_directory, 'a_test.npy'), self.a_test)
 
+    def get_experiment_dictionary(self):
+        """
+        Return the class dictionary, absent the dictionary elements whose values are numpy.ndarrays, as this
+        type is not compatible with dictionaries.
+        :return: A dictionary of settings for the experiment.
+        """
+        return {key: self.__dict__[key]
+                for key in self.__dict__
+                if not isinstance(self.__dict__[key], np.ndarray)}
+
     def save_experiment_settings(self):
         filename = os.path.abspath(os.path.join(self.experiment_directory, 'experiment.json'))
-        with open(filename, 'w') as experiment:
-            json.dump(self.__dict__, experiment, indent=4)
+        experiment_dictionary = self.get_experiment_dictionary()
+        with open(filename, 'w') as f:
+            json.dump(experiment_dictionary, f, indent=4)

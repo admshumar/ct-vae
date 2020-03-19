@@ -1,12 +1,13 @@
 from models.vae_conv import ConvolutionalVAE
 import argparse
 import os
+import json
 import numpy as np
 
 
 parser = argparse.ArgumentParser(description="A trained TensorFlow/Keras variational autoencoder for prediction.")
-#parser.add_argument("weight_directory", help="Directory containing the weights of the model.",
-                    #type=str)
+parser.add_argument("weight_directory", help="Directory containing the weights of the model.",
+                    type=str)
 parser.add_argument("-b", "--batch_size", help="Batch size. (Default: 5)",
                     type=int, default=5)
 parser.add_argument("-c", "--channels", help="Number of channels for the first convolution map. (Default: 8)",
@@ -23,6 +24,8 @@ parser.add_argument("--dec_activation", help="Decoder activation function. (Defa
                     type=str, default='relu')
 parser.add_argument("--early_stop", help="Train with early stopping. (Default: True)",
                     type=bool, default=True)
+parser.add_argument("--early_stop_delta", help="Early stopping threshold. (Default: 1e-2)",
+                    type=float, default=1e-2)
 parser.add_argument("--early_stop_patience", help="Early stopping patience. (Default: 20)",
                     type=int, default=20)
 parser.add_argument("--enc_activation", help="Encoder activation function. (Default: 'relu')",
@@ -45,7 +48,7 @@ parser.add_argument("--number_of_predictions", help="Number of predictions to ma
                     type=int, default=1)
 args = parser.parse_args()
 
-# weight_directory = os.path.abspath(os.path.join(os.getcwd(), 'data/experiments/vae_conv', args.weight_directory))
+weight_directory = os.path.abspath(os.path.join(os.getcwd(), 'data/experiments/vae_conv', args.weight_directory))
 os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpu)
 
 vae = ConvolutionalVAE(is_mnist=args.is_mnist,
@@ -64,21 +67,23 @@ vae = ConvolutionalVAE(is_mnist=args.is_mnist,
                        latent_dimension=args.latent_dim,
                        channel_size=args.channels,
                        depth=args.depth,
-                       early_stopping_delta=1e-2)
+                       early_stopping_delta=args.early_stop_delta)
 
 # Load an autoencoder's weights
-# model = vae.load_model_weights(args.weight_directory)
-# experiment = '2_5_0.0001_relu_relu_True_True_0.5_0.0001_20_0.01_512_alpha_0.5_x00'
 model = vae.load_model_weights(args.weight_directory)
 
-# directory = os.path.abspath(os.path.join(os.getcwd(), 'data', 'experiments', experiment))
-# filename = os.path.abspath(os.path.join(directory, 'prediction.npy'))
 # Specify data for the autoencoder
 data = [vae.gaussian_test, vae.x_test]
 
 # Get a prediction from the autoencoder
+filename = os.path.abspath(os.path.join(vae.experiment_directory, 'ae_prediction.npy'))
+json_filename = os.path.abspath(os.path.join(vae.experiment_directory, 'experiment.json'))
 reconstructed_data = vae.get_prediction(model, data=data, latent_only=True)
-np.save('filename', reconstructed_data)
+print(f"Saving file to {filename}.")
+d = {'a': 1, 'b': 2}
+with open(json_filename, 'w') as experiment:
+    json.dump(d, experiment, indent=4)
+np.save(filename, reconstructed_data)
 
 """
 for i in range(args.number_of_predictions):
