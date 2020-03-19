@@ -268,24 +268,6 @@ class ConvolutionalVAE(VAE):
         print("Variational autoencoder trained.\n")
         return auto_encoder, encoder, decoder, history
 
-    def train(self):
-        """
-        Begin logging, train the autoencoder, use the autoencoder's history to plot loss curves, and save_all the parameters of the autoencoder, encoder, and decoder (respectively) to .h5 files.
-        :return: None
-        """
-        if self.enable_logging:
-            logs.begin_logging(self.experiment_directory)
-
-        auto_encoder, encoder, decoder, history = self.fit_autoencoder()
-
-        plots.loss(history, self.image_directory)
-
-        self.save_model_weights(auto_encoder, 'auto_encoder')
-        self.save_model_weights(encoder, 'encoder')
-        self.save_model_weights(decoder, 'decoder')
-
-        self.plot_results((encoder, decoder))
-
     def generate(self, decoder, number_of_samples=1):
         """
         Generate samples using the decoder of the learned autoencoder's generative model.
