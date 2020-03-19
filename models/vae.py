@@ -906,7 +906,9 @@ class VAE:
                 for key in self.__dict__
                 if isinstance(self.__dict__[key], bool)
                 or isinstance(self.__dict__[key], int)
-                or isinstance(self.__dict__[key], float)}
+                or isinstance(self.__dict__[key], float)
+                or isinstance(self.__dict__[key], str)
+                or isinstance(self.__dict__[key], list)}
 
     def save_experiment_settings(self):
         filename = os.path.abspath(os.path.join(self.experiment_directory, 'experiment.json'))
