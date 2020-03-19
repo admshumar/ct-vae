@@ -904,7 +904,9 @@ class VAE:
         """
         return {key: self.__dict__[key]
                 for key in self.__dict__
-                if not isinstance(self.__dict__[key], np.ndarray)}
+                if isinstance(self.__dict__[key], bool)
+                or isinstance(self.__dict__[key], int)
+                or isinstance(self.__dict__[key], float)}
 
     def save_experiment_settings(self):
         filename = os.path.abspath(os.path.join(self.experiment_directory, 'experiment.json'))
