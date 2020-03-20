@@ -747,8 +747,7 @@ class VAE:
         x_test_pred_file = os.path.abspath(os.path.join(self.experiment_directory, 'x_test_predict.npy'))
         x_test_pred = np.load(x_test_pred_file)
         self.save_input_output_comparison(self.x_test, x_test_pred)
-
-        # self.report_latent_space_classifiers(encoder)
+        self.report_latent_space_classifiers(encoder)
         self.plot_results((encoder, decoder))
 
         return auto_encoder, encoder, decoder
