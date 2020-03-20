@@ -744,6 +744,9 @@ class VAE:
                              data=[self.gaussian_test, self.x_test],
                              data_filename='x_test_predict.npy')
         self.save_experiment_settings()
+        x_test_pred_file = os.path.abspath(os.path.join(self.experiment_directory, 'x_test_predict.npy'))
+        x_test_pred = np.load(x_test_pred_file)
+        self.save_input_output_comparison(self.x_test, x_test_pred)
 
         # self.report_latent_space_classifiers(encoder)
         self.plot_results((encoder, decoder))
@@ -921,3 +924,31 @@ class VAE:
         experiment_dictionary = self.get_experiment_dictionary()
         with open(filename, 'w') as f:
             json.dump(experiment_dictionary, f, indent=4)
+
+    def save_input_output_comparison(self,
+                                     input,
+                                     output,
+                                     idx=0,
+                                     number_of_rows=2,
+                                     number_of_columns=5,
+                                     figure_scale=8):
+        if not self.is_mnist:
+            # This is a hack for the x-ray data set. This condition should be removed.
+            # input = np.reshape(input, input.shape[0: -1])
+            # output = np.reshape(output, output.shape[0: -1])
+
+        input_array_list = [input[idx + i] for i in range(number_of_columns)]
+        output_array_list = [output[idx + i] for i in range(number_of_columns)]
+        array_list = input_array_list + output_array_list
+
+        figure_size_tuple = (figure_scale, figure_scale * number_of_rows / number_of_columns)
+
+        fig = plt.figure(figsize=figure_size_tuple)
+        for i in range(len(array_list)):
+            img = array_list[i]
+            fig.add_subplot(number_of_rows, number_of_columns, i + 1)
+            plt.imshow(img)
+        filename = os.path.abspath(os.path.join(self.experiment_directory,
+                                                f'reconstruction_{idx}:{idx + number_of_columns - 1}.png'))
+        plt.savefig(filename)
+        del fig
