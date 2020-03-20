@@ -18,7 +18,7 @@ from tensorflow.keras.layers import Input, LeakyReLU
 from utils import directories, logs, plots
 from utils import classifiers, operations
 from utils.plots import LatentSpaceTSNE
-from utils.labels import OneHotEncoder, Smoother, Flipper, GaussianSoftLabels
+from utils.labels import OneHotEncoder, OneHotDecoder, Smoother, Flipper, GaussianSoftLabels
 from utils.loaders import MNISTLoader, GenericLoader
 
 from sklearn.mixture import GaussianMixture
@@ -840,14 +840,20 @@ class VAE:
 
     def get_mixture_model(self, model, data, labels):
         latent_representation = self.get_prediction(model, data=data, latent_only=True)
+        if len(labels[0] > 1):
+            labels = OneHotDecoder(labels).decode()
         return classifiers.fit_mixture_model_on_latent_space(latent_representation, labels), latent_representation
 
     def get_logistic_regression(self, model, data, labels):
         latent_representation = self.get_prediction(model, data=data, latent_only=True)
+        if len(labels[0] > 1):
+            labels = OneHotDecoder(labels).decode()
         return classifiers.logistically_regress_on_latent_space(latent_representation, labels), latent_representation
 
     def get_support_vector_classification(self, model, data, labels):
         latent_representation = self.get_prediction(model, data=data, latent_only=True)
+        if len(labels[0] > 1):
+            labels = OneHotDecoder(labels).decode()
         return classifiers.sv_classify_on_latent_space(latent_representation, labels, kernel='rbf'), \
                latent_representation
 
@@ -858,7 +864,7 @@ class VAE:
         file.write(score_string)
 
     def report_latent_space_classifiers(self, encoder):
-        filepath = os.path.abspath(os.path.join(self.experiment_directory, 'classifiers.txt'))
+        filepath = os.path.abspath(os.path.join(self.experiment_directory, 'classifiers.log'))
         classifier_report = open(filepath, "w+")
         if self.with_logistic_regression:
             logistic_regression, latent_representation = self.get_logistic_regression(encoder,

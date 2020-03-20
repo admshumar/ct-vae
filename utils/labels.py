@@ -37,6 +37,19 @@ class OneHotEncoder:
         """
         return one_hot_encoding[:, class_index]
 
+class OneHotDecoder:
+    """
+    Takes in a list of one-hot encoded vectors and return a class vector.
+    """
+
+    def __init__(self, labels):
+        self.labels = labels
+        self.number_of_samples = len(labels)
+
+    def decode(self):
+        return np.asarray([np.where(self.labels[i] == 1)[0][0]
+                           for i in range(self.number_of_samples)])
+
 
 class Flipper:
     """
