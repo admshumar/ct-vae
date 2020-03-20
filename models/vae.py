@@ -948,7 +948,7 @@ class VAE:
             img = array_list[i]
             fig.add_subplot(number_of_rows, number_of_columns, i + 1)
             plt.imshow(img)
-        filename = os.path.abspath(os.path.join(self.experiment_directory,
+        filename = os.path.abspath(os.path.join(self.image_directory,
                                                 f'reconstruction_{idx}:{idx + number_of_columns - 1}.png'))
         plt.savefig(filename)
         del fig
