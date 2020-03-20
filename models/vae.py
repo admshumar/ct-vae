@@ -934,8 +934,8 @@ class VAE:
                                      figure_scale=8):
         if not self.is_mnist:
             # This is a hack for the x-ray data set. This condition should be removed.
-            # input = np.reshape(input, input.shape[0: -1])
-            # output = np.reshape(output, output.shape[0: -1])
+            input = np.reshape(input, input.shape[0: -1])
+            output = np.reshape(output, output.shape[0: -1])
 
         input_array_list = [input[idx + i] for i in range(number_of_columns)]
         output_array_list = [output[idx + i] for i in range(number_of_columns)]
