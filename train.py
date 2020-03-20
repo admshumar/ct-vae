@@ -37,6 +37,8 @@ parser.add_argument("--lr_plateau_patience", help="Factor for reducing learning 
                     type=float, default=0.1)
 parser.add_argument("--sgd", help="Train with stochastic gradient descent. (Default: True)",
                     type=bool, default=True)
+parser.add_argument("--latent_classifier", help="Apply a logistic regression classifier to the latent space representation. (Default: True)",
+                    type=bool, default=True)
 args = parser.parse_args()
 
 os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpu)
@@ -56,6 +58,7 @@ vae = ConvolutionalVAE(is_mnist=args.is_mnist,
                        latent_dimension=args.latent_dim,
                        channel_size=args.channels,
                        depth=args.depth,
-                       early_stopping_delta=1e-2)
+                       early_stopping_delta=1e-2,
+                       with_logistic_regression=args.latent_classifier)
 vae.train()
 del vae

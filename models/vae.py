@@ -726,20 +726,27 @@ class VAE:
         t1 = time()
         t = t1 - t0
         print(f"Variational autoencoder trained in {t} seconds.\n")
-        self.print_settings()
+
         plots.loss(history, self.image_directory)
+
         self.save_model_weights(auto_encoder, 'auto_encoder')
         self.save_model_weights(encoder, 'encoder')
         self.save_model_weights(decoder, 'decoder')
-        if self.latent_dimension == 2:
-            self.plot_results((encoder, decoder))
-        # self.report_latent_space_classifiers(encoder)
-        self.save_latent_representation(encoder,
-                                        data_filename='x_train_latent.npy')
-        self.save_latent_representation(encoder,
-                                        data=[self.gaussian_test, self.x_test],
-                                        data_filename='x_test_latent.npy')
+
+        self.save_prediction(encoder,
+                             data_filename='x_train_latent.npy')
+        self.save_prediction(encoder,
+                             data=[self.gaussian_test, self.x_test],
+                             data_filename='x_test_latent.npy')
+        self.save_prediction(auto_encoder,
+                             data_filename='x_train_predict.npy')
+        self.save_prediction(auto_encoder,
+                             data=[self.gaussian_test, self.x_test],
+                             data_filename='x_test_predict.npy')
         self.save_experiment_settings()
+
+        # self.report_latent_space_classifiers(encoder)
+        self.plot_results((encoder, decoder))
 
         return auto_encoder, encoder, decoder
 
@@ -777,7 +784,7 @@ class VAE:
             os.makedirs(model_directory)
         model.save_weights(model_filepath)
 
-    def save_latent_representation(self, model, data=None, labels=None, data_filename=None, labels_filename=None):
+    def save_prediction(self, model, data=None, labels=None, data_filename=None, labels_filename=None):
         """
         Save a model's predictions as NumPy arrays. If no data are specified, then the variational autoencoder's
         training set is given as input to the model.

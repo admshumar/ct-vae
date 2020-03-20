@@ -34,6 +34,7 @@ class ConvolutionalVAE(VAE):
                  is_mnist=True,
                  is_restricted=False,
                  is_standardized=False,
+                 with_logistic_regression=False,
                  show=False,
                  number_of_clusters=3,
                  restriction_labels=[1, 2, 3],
@@ -101,7 +102,8 @@ class ConvolutionalVAE(VAE):
                                                encoder_activation=encoder_activation,
                                                decoder_activation=decoder_activation,
                                                final_activation=final_activation,
-                                               model_name=model_name)
+                                               model_name=model_name,
+                                               with_logistic_regression=with_logistic_regression)
 
     def conv_block(self, z, number_of_filters):
         z = Conv2D(filters=number_of_filters,
