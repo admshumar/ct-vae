@@ -841,19 +841,17 @@ class VAE:
     def get_mixture_model(self, model, data, labels):
         latent_representation = self.get_prediction(model, data=data, latent_only=True)
         if len(labels[0] > 1):
-            labels = OneHotDecoder(labels).decode()
+            labels = OneHotDecoder(labels).decode_to_multiclass()
         return classifiers.fit_mixture_model_on_latent_space(latent_representation, labels), latent_representation
 
     def get_logistic_regression(self, model, data, labels):
         latent_representation = self.get_prediction(model, data=data, latent_only=True)
-        if len(labels[0] > 1):
-            labels = OneHotDecoder(labels).decode()
         return classifiers.logistically_regress_on_latent_space(latent_representation, labels), latent_representation
 
     def get_support_vector_classification(self, model, data, labels):
         latent_representation = self.get_prediction(model, data=data, latent_only=True)
         if len(labels[0] > 1):
-            labels = OneHotDecoder(labels).decode()
+            labels = OneHotDecoder(labels).decode_to_multiclass()
         return classifiers.sv_classify_on_latent_space(latent_representation, labels, kernel='rbf'), \
                latent_representation
 

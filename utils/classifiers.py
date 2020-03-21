@@ -2,10 +2,13 @@ import numpy as np
 from sklearn import svm
 from sklearn.mixture import GaussianMixture
 from sklearn.linear_model import LogisticRegression
+from utils.labels import OneHotDecoder
 
 
 def logistically_regress_on_latent_space(data, labels):
-    logistic_regressor = LogisticRegression(multi_class='multinomial')
+    if len(labels[0] > 1):
+        labels = OneHotDecoder(labels).decode_to_multiclass()
+    logistic_regressor = LogisticRegression(multi_class='multinomial', max_iter=1000)
     logistic_regressor.fit(data, labels)
     return logistic_regressor
 
