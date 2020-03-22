@@ -6,9 +6,9 @@ from utils.labels import OneHotDecoder
 
 
 def logistically_regress_on_latent_space(data, labels):
-    if len(labels[0] > 1):
+    if len(labels.shape) > 1:
         labels = OneHotDecoder(labels).decode_to_multiclass()
-    logistic_regressor = LogisticRegression(multi_class='multinomial', max_iter=1000)
+    logistic_regressor = LogisticRegression(max_iter=1000)
     logistic_regressor.fit(data, labels)
     return logistic_regressor
 

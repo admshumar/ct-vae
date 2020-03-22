@@ -733,13 +733,11 @@ class VAE:
         self.save_model_weights(encoder, 'encoder')
         self.save_model_weights(decoder, 'decoder')
 
-        self.save_prediction(encoder,
-                             data_filename='x_train_latent.npy')
+        #self.save_prediction(encoder, data_filename='x_train_latent.npy')
         self.save_prediction(encoder,
                              data=[self.gaussian_test, self.x_test],
                              data_filename='x_test_latent.npy')
-        self.save_prediction(auto_encoder,
-                             data_filename='x_train_predict.npy')
+        #self.save_prediction(auto_encoder, data_filename='x_train_predict.npy')
         self.save_prediction(auto_encoder,
                              data=[self.gaussian_test, self.x_test],
                              data_filename='x_test_predict.npy')
@@ -856,6 +854,8 @@ class VAE:
                latent_representation
 
     def report_score(self, model, data, labels, text, file):
+        if len(labels.shape) > 1:
+            labels = OneHotDecoder(labels).decode_to_multiclass()
         score = model.score(data, labels)
         score_string = text + f" {score}\n"
         print(text, score)

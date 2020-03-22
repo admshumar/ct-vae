@@ -62,3 +62,17 @@ vae = ConvolutionalVAE(is_mnist=args.is_mnist,
                        with_logistic_regression=args.latent_classifier)
 vae.train()
 del vae
+
+"""
+DEBUG:
+vae = ConvolutionalVAE(is_mnist=False,
+                       number_of_epochs=1,
+                       enable_logging=False,
+                       batch_size=8, #args.batch_size,
+                       latent_dimension=64, # args.latent_dim,
+                       depth=5, # args.depth,
+                       with_logistic_regression=True)
+vae.train()
+del vae
+"""
+
