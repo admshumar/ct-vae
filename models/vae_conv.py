@@ -155,6 +155,7 @@ class ConvolutionalVAE(VAE):
             z = self.conv_block(z, number_of_filters)
 
         z = Flatten()(z)
+        z = Dense(2*self.gaussian_dimension, name="gaussian")(z)
         z_gaussian = Dense(self.gaussian_dimension, name="gaussian")(z)
         z = Reparametrization(name="latent_samples")(z_gaussian)
         encoder_output = [z_gaussian, z]
