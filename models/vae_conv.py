@@ -106,7 +106,7 @@ class ConvolutionalVAE(VAE):
                                                with_logistic_regression=with_logistic_regression)
 
     def conv_block(self, z, number_of_filters):
-        """
+
         z = Conv2D(filters=number_of_filters,
                    kernel_size=(3, 3),
                    padding='same',
@@ -115,7 +115,6 @@ class ConvolutionalVAE(VAE):
             z = BatchNormalization()(z)
         if self.enable_dropout:
             z = Dropout(rate=self.dropout_rate, seed=17)(z)
-        """
 
         z = Conv2D(filters=number_of_filters,
                    kernel_size=(3, 3),
