@@ -13,6 +13,7 @@ predict_encoder.py
 prediction.npy
 test.sh
 train_debug.py
+models/vae_vq.py
 
 # BOILERPLATE
 # Byte-compiled / optimized / DLL files
