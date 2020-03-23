@@ -129,7 +129,7 @@ class ConvolutionalVAE(VAE):
 
     def deconv_block(self, z, number_of_filters):
         z = Conv2DTranspose(filters=number_of_filters,
-                            kernel_size=(4, 4),
+                            kernel_size=(3, 3),
                             strides=(2, 2),
                             padding='same',
                             activation=self.encoder_activation)(z)
