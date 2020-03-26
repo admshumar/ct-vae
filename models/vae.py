@@ -23,6 +23,8 @@ from utils.loaders import MNISTLoader, GenericLoader
 
 from sklearn.mixture import GaussianMixture
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import precision_score
+from sklearn.metrics import recall_score
 
 import matplotlib.pyplot as plt
 
@@ -853,11 +855,17 @@ class VAE:
         return classifiers.sv_classify_on_latent_space(latent_representation, labels, kernel='rbf'), \
                latent_representation
 
-    def report_score(self, model, data, labels, text, file):
+    def report_score(self, model, data, labels, text, file, soft_labels=None):
         if len(labels.shape) > 1:
             labels = OneHotDecoder(labels).decode_to_multiclass()
         score = model.score(data, labels)
-        score_string = text + f" {score}\n"
+        score_string = text + f"Score: {score}"
+        if soft_labels is not None:
+            soft_labels = OneHotDecoder(soft_labels).decode_to_multiclass()
+            precision = precision_score(labels, soft_labels, average='weighted')
+            recall = recall_score(labels, soft_labels, average='weighted')
+            f1_score = (2*precision*recall)/(precision + recall)
+            score_string += f"\nPrecision: {precision}\nRecall: {recall}\nF1: {f1_score}"
         print(text, score)
         file.write(score_string)
 
@@ -866,13 +874,24 @@ class VAE:
         classifier_report = open(filepath, "w+")
         if self.with_logistic_regression:
             logistic_regression, latent_representation = self.get_logistic_regression(encoder,
-                                                                                      [self.gaussian_test, self.x_test],
-                                                                                      self.y_test)
+                                                                                      [self.gaussian_train, self.x_train],
+                                                                                      self.y_train)
+            np.save(os.path.join(self.experiment_directory, 'latent_x_train.npy'), latent_representation)
+            y_train_soft = logistic_regression.predict_proba(latent_representation)
+            np.save(os.path.join(self.experiment_directory, 'y_train_soft.npy'), y_train_soft)
+
+            latent_representation_test = self.get_prediction(encoder,
+                                                             data=[self.gaussian_test, self.x_test],
+                                                             latent_only=True)
+            y_test_soft = logistic_regression.predict_proba(latent_representation_test)
+            np.save(os.path.join(self.experiment_directory, 'y_test_soft.npy'), y_test_soft)
+
             self.report_score(logistic_regression,
-                              latent_representation,
+                              latent_representation_test,
                               self.y_test,
-                              "Logistic regression model score:",
-                              classifier_report)
+                              "Logistic regression on latent representation of test set\n",
+                              classifier_report,
+                              soft_labels=y_test_soft)
 
         if self.with_mixture_model:
             mixture_model, latent_representation = self.get_mixture_model(encoder,

@@ -40,7 +40,7 @@ class LatentSpaceClassifier:
         mlp.summary()
         plot_model(mlp, to_file='lsc_mlp.png', show_shapes=True)
         mlp.compile(optimizers.Adam(), loss=CategoricalCrossentropy(), metrics='acc')
-        mlp.fit
+        #mlp.fit
 
     def get_logistic_regression(self):
         return classifiers.logistically_regress_on_latent_space(self.data, self.labels)
