@@ -815,7 +815,7 @@ class VAE:
         """
         Run a prediction on the given data set.
         :param model: A Keras model. In this case, either the autoencoder, the encoder, or the decoder.
-        :param data: The data on which to get_prediction. Default is None. If None, then data is set to the training data.
+        :param data: The data on which to get a prediction. Default is None. If None, then data is set to the training data.
         :return: The model's prediction of the data.
         """
         if data is None:

@@ -47,8 +47,7 @@ class OneHotDecoder:
         self.number_of_samples = len(labels)
 
     def decode_to_multiclass(self):
-        return np.asarray([np.where(self.labels[i] == 1)[0][0]
-                           for i in range(self.number_of_samples)])
+        return np.argmax(self.labels, axis=-1)
 
     def decode_to_binary(self, negative_class_index):
         return self.labels[:, negative_class_index]

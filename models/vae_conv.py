@@ -10,6 +10,7 @@ from tensorflow.keras import optimizers
 from tensorflow.keras.layers import *
 from tensorflow.keras.models import Model
 from tensorflow.keras.utils import plot_model
+from tensorflow.keras import regularizers
 
 from models.layers.vae_layers import Reparametrization
 from models.losses.losses import EncodingLoss
@@ -106,7 +107,7 @@ class ConvolutionalVAE(VAE):
                                                with_logistic_regression=with_logistic_regression)
 
     def conv_block(self, z, number_of_filters):
-
+        """
         z = Conv2D(filters=number_of_filters,
                    kernel_size=(3, 3),
                    padding='same',
@@ -115,12 +116,13 @@ class ConvolutionalVAE(VAE):
             z = BatchNormalization()(z)
         if self.enable_dropout:
             z = Dropout(rate=self.dropout_rate, seed=17)(z)
-
+        """
         z = Conv2D(filters=number_of_filters,
                    kernel_size=(3, 3),
                    strides=(2, 2),
                    padding='same',
-                   activation=self.encoder_activation)(z)
+                   activation=self.encoder_activation,
+                   kernel_regularizer=regularizers.l2(1e-6))(z)
         if self.enable_batch_normalization:
             z = BatchNormalization()(z)
         if self.enable_dropout:
@@ -132,7 +134,8 @@ class ConvolutionalVAE(VAE):
                             kernel_size=(3, 3),
                             strides=(2, 2),
                             padding='same',
-                            activation=self.encoder_activation)(z)
+                            activation=self.encoder_activation,
+                            kernel_regularizer=regularizers.l2(1e-6))(z)
         if self.enable_batch_normalization:
             z = BatchNormalization()(z)
         if self.enable_dropout:
@@ -148,6 +151,14 @@ class ConvolutionalVAE(VAE):
             z = input_data_tensor
 
         input_gaussian_tensor = self.encoder_gaussian
+
+        # Extra convolutional layer, with moderate dropout (Akshay)
+        z = Conv2D(filters=self.channel_size,
+                   kernel_size=(3, 3),
+                   padding='same',
+                   kernel_regularizer=regularizers.l2(1e-6))(z)
+        z = LeakyReLU(alpha=1e-2)(z)
+        z = Dropout(0.2)(z)
 
         for i in range(0, self.depth):
             number_of_filters = self.channel_size*(2**i)
