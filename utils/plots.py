@@ -3,7 +3,7 @@ from sklearn.manifold import TSNE
 import matplotlib
 import matplotlib.colors
 import matplotlib.pyplot as plt
-
+import numpy as np
 
 class LatentSpaceTSNE:
     def __init__(self, data, labels, directory, number_of_tnse_components=2):
@@ -13,30 +13,47 @@ class LatentSpaceTSNE:
             self.number_of_tnse_components = 2
         self.data = data
         self.directory = directory
-        self.labels = labels
-        self.perplexity_list = [5, 10, 30, 50, 100]
-        self.color_list = ['#00B7BA', '#FFB86F', '#5E6572', '#6B0504', '#BA5C12']
+        self.labels = np.argmax(labels, axis=-1)
+        self.classes = np.unique(np.argmax(labels, axis=-1))
+        self.perplexity_list = [10, 30, 50]
+        color_list = ['#00B7BA', '#FFB86F', '#5E6572', '#6B0504', '#BA5C12']
+        self.color_list = color_list
+        self.color_dict = {i: color_list[i] for i in range(len(color_list))}
+
+    def get_embedding(self, perplexity):
+        return TSNE(n_components=self.number_of_tnse_components,
+                             perplexity=perplexity).fit_transform(self.data)
+
+    def save_embedding(self, perplexity):
+        embedded_data = self.get_embedding(perplexity)
+        filename = 'latent_tsne_{}.npy'.format(perplexity)
+        file_path = os.path.join(self.directory, filename)
+        np.save(file_path, embedded_data)
 
     def save_tsne(self):
         for perplexity in self.perplexity_list:
-            embedded_data = TSNE(n_components=self.number_of_tnse_components,
-                                 perplexity=perplexity).fit_transform(self.data)
-
+            embedded_data = self.get_embedding(perplexity)
             fig_3d = plt.figure(dpi=200)
 
             if self.number_of_tnse_components == 2:
                 ax = fig_3d.add_subplot()
-                ax.scatter(embedded_data[:, 0],
-                           embedded_data[:, 1],
-                           c=self.labels,
-                           cmap=matplotlib.colors.ListedColormap(self.color_list))
+                for label in self.classes:
+                    data = embedded_data[np.where(self.labels == label)]
+                    ax.scatter(data[:, 0],
+                               data[:, 1],
+                               c=self.color_dict[label],
+                               label=str(label))
+                ax.legend(loc='best')
             else:
                 ax = fig_3d.add_subplot(projection='3d')
-                ax.scatter(embedded_data[:, 0],
-                           embedded_data[:, 1],
-                           embedded_data[:, 2],
-                           c=self.labels,
-                           cmap=matplotlib.colors.ListedColormap(self.color_list))
+                for label in self.classes:
+                    data = embedded_data[np.where(self.labels == label)]
+                    ax.scatter(data[:, 0],
+                               data[:, 1],
+                               data[:, 2],
+                               c=self.color_dict[label],
+                               label=str(label))
+                ax.legend(loc='best')
 
             ax.set_title('t-SNE with Perplexity {}'.format(perplexity))
             filename = 'latent_tsne_{}.png'.format(perplexity)
@@ -75,4 +92,3 @@ def loss(model_history, directory):
 def accuracy(model_history, directory):
     plot(model_history, directory, ['acc', 'val_acc'], 'accuracy',
          'Model Accuracy', 'Accuracy', 'Epochs', location='lower right')
-
