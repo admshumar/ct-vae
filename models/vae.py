@@ -528,6 +528,12 @@ class VAE:
         for t in self.__dict__.items():
             print(t)
 
+    def scheduler(self, epoch):
+        if epoch < 20:
+            return self.learning_rate
+        else:
+            return self.learning_rate * tensorflow.math.exp(0.1 * (20 - epoch))
+
     def define_encoder(self):
         """
         Abstract method for encoder instantiation.
